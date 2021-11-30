@@ -26,9 +26,15 @@ def win():
 
 def lin():
     # Creates the user hidden as possible with no login and no home directory
-    p = subprocess.run(['echo', passwd, '|', 'openssl', 'passwd', '-1', '-stdin'], stdout=subprocess.PIPE).stdout.decode()
-    os.system(f"adduser --no-create-home --disabled-login --force-badname --quiet -s /bin/bash -p {p} {username}")
-
+    try:
+        p = subprocess.run(['echo', passwd, '|', 'openssl', 'passwd', '-1', '-stdin'],
+                           stdout=subprocess.PIPE).stdout.decode()
+        os.system(f"adduser --no-create-home --disabled-login --force-badname --quiet -s /bin/bash -p {p} {username}")
+    except subprocess.SubprocessError or os.error:
+        if subprocess.SubprocessError:
+            print("Sorry, something went wrong with 'subprocess'")
+        elif os.error:
+            print("Sorry, something went wrong with 'os'")
 
 # Determine which Operation System and use correct function
 if __name__ == "__main__":
@@ -39,4 +45,3 @@ if __name__ == "__main__":
             lin()
     except os.error:
         print('Sorry, something went wrong determining Operation System.')
-        
